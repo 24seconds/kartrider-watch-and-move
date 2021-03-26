@@ -29,6 +29,7 @@ fn main() {
     // Create a watcher object, delivering debounced events.
     // The notification back-end is selected based on the platform.
     let mut watcher = raw_watcher(tx).unwrap();
+    let watcher_path = args.watch_path;
 
     // Add a path to be watched. All files and directories at that path and
     // below will be monitored for changes.
@@ -37,7 +38,7 @@ fn main() {
         .unwrap();
 
 
-    let watcher_path = args.watch_path;
+    
     let mut target_path = args.target_path;
     let options = CopyOptions::new(); //Initialize default values for CopyOptions
 
