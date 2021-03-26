@@ -1,8 +1,9 @@
+extern crate fs_extra;
 extern crate notify;
 
-use notify::{Watcher, RecursiveMode, watcher, raw_watcher};
+use fs_extra::file::{move_file, CopyOptions};
+use notify::{op::REMOVE, raw_watcher, RecursiveMode, Watcher};
 use std::sync::mpsc::channel;
-use std::time::Duration;
 
 fn main() {
     // Create a channel to receive the events.
@@ -10,19 +11,53 @@ fn main() {
 
     // Create a watcher object, delivering debounced events.
     // The notification back-end is selected based on the platform.
-    // let mut watcher = watcher(tx, Duration::from_secs(10)).unwrap();
-
     let mut watcher = raw_watcher(tx).unwrap();
 
     // Add a path to be watched. All files and directories at that path and
     // below will be monitored for changes.
-    watcher.watch("/Users/young/Desktop/moloco/playground/rust/watcher_sample", RecursiveMode::Recursive).unwrap();
+    watcher
+        .watch(
+            "/Users/young/Desktop/moloco/playground/rust/watcher_sample",
+            RecursiveMode::Recursive,
+        )
+        .unwrap();
+
+    let destination_path = "/Users/young/Desktop/moloco/playground/rust/target_sample";
+    let options = CopyOptions::new(); //Initialize default values for CopyOptions
 
     loop {
         match rx.recv() {
             Ok(event) => {
-               println!("{:?}", event)
-            },
+                println!("{:?}", event);
+
+                match event.op {
+                    Ok(op) => {
+                        // Do nothing
+                        if op & REMOVE == REMOVE {
+                            continue;
+                        }
+                    }
+                    Err(err) => println!("Error at receiving event!, {:?}", err),
+                }
+
+                let source = event.path;
+
+                let source_file_name = source
+                    .as_ref()
+                    .and_then(|name| name.file_name())
+                    .and_then(|name| name.to_str())
+                    .unwrap();
+
+                let destination = format!("{}/{}", destination_path, source_file_name);
+
+                println!("source file name: {}", &source_file_name);
+                println!("destination: {}", &destination);
+
+                match move_file(source.unwrap(), destination, &options) {
+                    Ok(_) => println!("File moved!"),
+                    Err(reason) => println!("Failed to move!, {:?}", reason),
+                }
+            }
             Err(e) => println!("watch error: {:?}", e),
         }
     }
