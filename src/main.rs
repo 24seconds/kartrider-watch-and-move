@@ -3,9 +3,27 @@ extern crate notify;
 
 use fs_extra::file::{move_file, CopyOptions};
 use notify::{op::REMOVE, raw_watcher, RecursiveMode, Watcher};
-use std::sync::mpsc::channel;
+use std::{path::PathBuf, sync::mpsc::channel};
+use structopt::StructOpt;
+
+#[derive(StructOpt)]
+struct Cli {
+    /// THe path to watch
+    #[structopt(parse(from_os_str), long)]
+    watch_path: PathBuf,
+
+    /// The path to move file to
+    #[structopt(parse(from_os_str), long)]
+    target_path: PathBuf,
+}
 
 fn main() {
+    let args = Cli::from_args();
+
+    println!("watchPath: {:?}", args.watch_path);
+    println!("targetPath: {:?}", args.target_path);
+
+
     // Create a channel to receive the events.
     let (tx, rx) = channel();
 

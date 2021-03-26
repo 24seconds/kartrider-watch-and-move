@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 notify = "4.0.15"
 fs_extra = "1.2.0"
+structopt = "0.3.13"
