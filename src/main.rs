@@ -2,7 +2,7 @@ extern crate fs_extra;
 extern crate notify;
 
 use fs_extra::file::{move_file, CopyOptions};
-use notify::{op::REMOVE, raw_watcher, RecursiveMode, Watcher};
+use notify::{op::CREATE, raw_watcher, RecursiveMode, Watcher};
 use std::{path::PathBuf, sync::mpsc::channel};
 use structopt::StructOpt;
 
@@ -23,7 +23,6 @@ fn main() {
     println!("watchPath: {:?}", args.watch_path);
     println!("targetPath: {:?}", args.target_path);
 
-
     // Create a channel to receive the events.
     let (tx, rx) = channel();
 
@@ -31,16 +30,18 @@ fn main() {
     // The notification back-end is selected based on the platform.
     let mut watcher = raw_watcher(tx).unwrap();
 
+    // let watcher_path = "/Users/young/Desktop/moloco/playground/rust/watcher_sample";
+    let watcher_path = "/home/young/Desktop/Development/playground/rust/watcher";
+
     // Add a path to be watched. All files and directories at that path and
     // below will be monitored for changes.
     watcher
-        .watch(
-            "/Users/young/Desktop/moloco/playground/rust/watcher_sample",
-            RecursiveMode::Recursive,
-        )
+        .watch(watcher_path, RecursiveMode::Recursive)
         .unwrap();
 
-    let destination_path = "/Users/young/Desktop/moloco/playground/rust/target_sample";
+
+    // let destination_path = "/Users/young/Desktop/moloco/playground/rust/target_sample";
+    let destination_path = "/home/young/Desktop/Development/playground/rust/target";
     let options = CopyOptions::new(); //Initialize default values for CopyOptions
 
     loop {
@@ -51,7 +52,7 @@ fn main() {
                 match event.op {
                     Ok(op) => {
                         // Do nothing
-                        if op & REMOVE == REMOVE {
+                        if op != CREATE {
                             continue;
                         }
                     }
