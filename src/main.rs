@@ -30,9 +30,6 @@ fn main() {
     // The notification back-end is selected based on the platform.
     let mut watcher = raw_watcher(tx).unwrap();
 
-    // let watcher_path = "/Users/young/Desktop/moloco/playground/rust/watcher_sample";
-    let watcher_path = "/home/young/Desktop/Development/playground/rust/watcher";
-
     // Add a path to be watched. All files and directories at that path and
     // below will be monitored for changes.
     watcher
@@ -40,8 +37,8 @@ fn main() {
         .unwrap();
 
 
-    // let destination_path = "/Users/young/Desktop/moloco/playground/rust/target_sample";
-    let destination_path = "/home/young/Desktop/Development/playground/rust/target";
+    let watcher_path = args.watch_path;
+    let mut target_path = args.target_path;
     let options = CopyOptions::new(); //Initialize default values for CopyOptions
 
     loop {
@@ -67,12 +64,12 @@ fn main() {
                     .and_then(|name| name.to_str())
                     .unwrap();
 
-                let destination = format!("{}/{}", destination_path, source_file_name);
+                target_path.push(source_file_name);
 
-                println!("source file name: {}", &source_file_name);
-                println!("destination: {}", &destination);
+                println!("[LOG]: source: {:?}", &source);
+                println!("[LOG]: target: {:?}", &target_path);
 
-                match move_file(source.unwrap(), destination, &options) {
+                match move_file(source.unwrap(), &target_path, &options) {
                     Ok(_) => println!("File moved!"),
                     Err(reason) => println!("Failed to move!, {:?}", reason),
                 }
