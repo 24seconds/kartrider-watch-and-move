@@ -18,6 +18,7 @@ struct Cli {
 }
 
 fn main() {
+    // test comment2
     let args = Cli::from_args();
 
     println!("watchPath: {:?}", args.watch_path);
