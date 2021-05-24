@@ -24,6 +24,7 @@ fn main() {
     println!("targetPath: {:?}", args.target_path);
 
     // Create a channel to receive the events.
+    // test comment
     let (tx, rx) = channel();
 
     // Create a watcher object, delivering debounced events.
